@@ -10,9 +10,112 @@
 <label><input type="radio" name="1" id="XMLmode">XML</label>
 <label><input type="checkbox" id="htmlEscape" checked>&lt;や&gt;をエスケープ</label>
 <div style="position:absolute; top:2em; bottom:0; width:100%; display:flex;">
-  <textarea id="input" style="flex:0 1 30%"></textarea>
-  <div id="htmlOutput" style="flex:0 1 35%"></div>
-  <div id="visualOutput" style="flex:0 1 35%"></div>
+  <textarea id="input" style="flex:0 1 30%">
+    \h1{Yuki Markup Language}
+
+    \p{TeXを若干意識したHTML/XMLラッパー言語です。}
+
+    \a[href="https://github.com/Yuki-jukjis/YukiMarkupLanguage"]{View on GutHub}
+
+    \hr
+
+    \h2{文法}
+
+    \h3{基本}
+
+    \div[.code]{\span[.codetag]{入力}
+      \\タグ名 \[属性\] \{子要素\}
+    }
+    \p{と書くと、}
+      \div[.code]{\span[.codetag]{出力}
+    <タグ名 属性>子要素</タグ名>
+    }
+    \p{に変換されます。入れ子にすることもできます。}
+
+    \p{属性を持たない場合は\[\]を、子要素を持たない場合は\{\}を省略することができます。}
+
+    \p{\\とタグ名の間に空白や改行を入れることはできません。タグ名と\[、\]と\{間の空白、改行は任意です。}
+
+    \h3{エスケープ}
+
+    \p{タグ名、属性名、属性の値、テキスト部分に含まれる\[、\]、\{、\}、\\は、それぞれ\\\[、\\\]、\\\{、\\\}、\\\\にエスケープする必要があります。また、タグ名を\\やエスケープした文字から始めることはできません。}
+
+    \h3{属性}
+
+    属性部には、以下の四種類のものを、空白文字区切りで書くことができます。
+
+    \ol{
+    \li{属性名="値" または 属性名='値' の形のもの}
+    \li{属性名=値 の形のもの}
+    \li{#値 または .値 の形のもの}
+    \li{値 の形のもの}
+    }
+
+    \p{属性名には空白文字と=を含めることができません。値に使える文字列は形によって異なります。}
+
+    \p{1.はそのまま出力されます。値は0文字以上で、"で挟んだ場合は"を、'で挟んだ場合は'を、それぞれ含めることができません。}
+
+    \p{2.は、値に"が含まれない場合は"で挟み、値に'が含まれない場合は'で挟んで、出力されます。どちらも含まれる場合はそのまま出力されます（非推奨）。値は1文字以上で、空白文字を含めることはできません。}
+
+    \p{3.はそれぞれ id=値、class=値 の省略とみなし、2.と同様に処理されます。}
+
+    \p{4.はそのまま出力されます。値は1文字以上で、空白文字を含めることができません。}
+
+    \div[.code]{\span[.codetag]{入力}
+    \\input \[type=radio style="display:none" checked\]
+    }
+
+    \div[.code]{\span[.codetag]{出力}
+      <hr style="height:3px">
+    }
+
+    \lt;input type="radio" style="display:none" checked\gt;
+
+    \h3{HTMLモード、XMLモード}
+    \p{枠外上部のチェックボックスで、HTMLモードとXMLモードを切り替えることができます。}
+
+    \p{HTMLモードではbrタグ、imgタグ、hrタグなどの空要素は、閉じタグを生成しません。子要素を指定した場合は無視されます。}
+
+    \div[.code]{\span[.codetag]{入力}
+      \\hr \[style="height:3px"\] \{ \\span \{無視されます\} \}
+    }
+
+    \div[.code]{\span[.codetag]{出力}
+      <hr style="height:3px">
+    }
+
+    \p{XMLモードではこの処理は行われず、全てのタグに閉じタグが生成されます。}
+
+    \style{
+    p, h1, h2, h3, a \{
+     color: #2b2b2b;
+    \}
+    h1 \{
+      text-align:center;
+    \}
+    .code \{
+      position: relative;
+      color: #E0E0E0;
+      background-color: #2b2b2b;
+      margin: 1em 30px;
+      padding: 2.5em 30px 1em;
+      font-size: .9em;
+    \}
+    .codetag \{
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 30px;
+      color: #2b2b2b;
+      background-color: #E0E0E0;
+      padding: 5px;
+      width: 60px;
+      text-align: center;
+    \}
+    }
+  </textarea>
+  <div id="visualOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
+  <div id="htmlOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
 </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ window.onload = function(){
   $('XMLmode').onclick = update;
   $('HTMLmode').onclick = update;
   $("htmlEscape").onclick = update;
+  update();
 }
 
 function token(str) {
