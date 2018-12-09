@@ -4,6 +4,7 @@ window.onload = function(){
   $('input').onkeyup = update;
   $('XMLmode').onclick = update;
   $('HTMLmode').onclick = update;
+  $("htmlEscape").onclick = update;
 }
 
 function token(str) {
@@ -188,6 +189,7 @@ var content = map(many(choice(textNode, myNode)),
 
 function update() {
   var input = $('input').value;
+  if($("htmlEscape").checked) input = input.split("<").join("&lt;").split(">").join("&gt;");
   var output = content(input, 0).result;
   $('htmlOutput').innerText = output;
   $('visualOutput').innerHTML = output;
