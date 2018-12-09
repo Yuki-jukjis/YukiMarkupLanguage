@@ -2,6 +2,8 @@ function $(id) { return document.getElementById(id); }
 
 window.onload = function(){
   $('input').onkeyup = update;
+  $('XMLmode').onclick = update;
+  $('HTMLmode').onclick = update;
 }
 
 function token(str) {
@@ -125,6 +127,10 @@ var myNode = map(seq(
       (result[3] ? result[3][1] + result[3][2].raw + result[3][3] : "");
 
     var parsed = "<" + result[1] + (result[2] ? " " + result[2][1] : "") + ">";
+    if($('XMLmode').checked) {
+      parsed += (result[3] ? result[3][1].parsed : "") + "</" + result[1] + ">";
+      return {raw, parsed};
+    }
     switch(result[1]){
       case 'area':
       case 'base':
