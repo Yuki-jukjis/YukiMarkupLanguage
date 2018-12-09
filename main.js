@@ -114,16 +114,34 @@ function map(parser, fn) {
   };
 }
 
-var tagname = regex(/[^\s\[\{]+/);//regex(/[a-zA-Z][a-zA-Z0-9]*/);
-var attitude = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
-  function(result){
-    return result
-      .split("\\[").join("[")
-      .split("\\]").join("]")
-      .split("\\{").join("{")
-      .split("\\}").join("}")
-      .split("\\\\").join("\\");
-  });
+function decodeEscape(input) {
+  return input
+    .split("\\[").join("[")
+    .split("\\]").join("]")
+    .split("\\{").join("{")
+    .split("\\}").join("}")
+    .split("\\\\").join("\\");
+}
+function addQuote(input) {
+  var quote = "";
+  if(input.indexOf('"') == -1) quote = '"';
+  else if(input.indexOf("'") == -1) quote = "'";
+  return quote+input+quote;
+}
+
+var tagname = map(regex(/[^\s\[\]\{\}\\]([^\s\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)*/), decodeEscape);
+var attitudeName = map(regex(/([^\s=\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/), decodeEscape);
+var attitudeValue0 = map(regex(/([^\s\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/), decodeEscape);
+var attitudeValue1 = map(regex(/([^'\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)*/), decodeEscape);
+var attitudeValue2 = map(regex(/([^"\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)*/), decodeEscape);
+var attitude = map(many(seq(regex(/\s*/), choice(
+  map(seq(attitudeName, regex(/\s*=\s*'/), attitudeValue1, regex(/'/)), result=>result[0]+"='"+result[2]+"'"),
+  map(seq(attitudeName, regex(/\s*=\s*"/), attitudeValue2, regex(/"/)), result=>result[0]+'="'+result[2]+'"'),
+  map(seq(attitudeName, regex(/\s*=\s*/), attitudeValue0), result=>result[0]+"="+addQuote(result[2])),
+  map(seq(token("#"), attitudeValue0), result=>"id"+"="+addQuote(result[1])),
+  map(seq(token("."), attitudeValue0), result=>"class"+"="+addQuote(result[1])),
+  attitudeValue0,
+))), result=>result.map(x=>x[1]).join(" "));
 var textNode = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
   function(result){
     return result
@@ -135,7 +153,7 @@ var textNode = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
   });
 var myNode = map(seq(
   token("\\"), tagname,
-  option(seq(regex(/\s*\[/), attitude, regex(/\]/))),
+  option(seq(regex(/\s*\[/), attitude, regex(/\s*\]/))),
   option(seq(regex(/\s*\{/), lazy(()=>content), regex(/\}/)))),
   function (result) {
     var parsed = "<" + result[1] + (result[2] ? " " + result[2][1] : "") + ">";
