@@ -114,13 +114,22 @@ function map(parser, fn) {
   };
 }
 
-var tagname = regex(/[^\s\({]+/);//regex(/[a-zA-Z][a-zA-Z0-9]*/);
-var attitude = regex(/[^\)]*/);
-var textNode = map(regex(/[^}\\]+/), function(result){return {raw:result, parsed:result};});
+var tagname = regex(/[^\s\[\{]+/);//regex(/[a-zA-Z][a-zA-Z0-9]*/);
+var attitude = regex(/[^\]]*/);
+var textNode = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
+  function(result){
+    result = result
+      .split("\\[").join("[")
+      .split("\\]").join("]")
+      .split("\\{").join("{")
+      .split("\\}").join("}")
+      .split("\\\\").join("\\");
+    return {raw:result, parsed:result};
+  });
 var myNode = map(seq(
   token("\\"), tagname,
-  option(seq(regex(/\s*\(/), attitude, regex(/\)/))),
-  option(seq(regex(/\s*{/), lazy(()=>content), regex(/}/)))),
+  option(seq(regex(/\s*\[/), attitude, regex(/\]/))),
+  option(seq(regex(/\s*\{/), lazy(()=>content), regex(/\}/)))),
   function (result) {
     var raw = result[0] + result[1] +
       (result[2] ? result[2].join("") : "") +
@@ -157,7 +166,7 @@ var myNode = map(seq(
         return {raw, parsed};
     }
   });
-var content = map(many(choice(myNode, textNode)),
+var content = map(many(choice(textNode, myNode)),
   function(result) {
     return {
       raw:result.map(x=>x.raw).join(''),
