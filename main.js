@@ -115,68 +115,62 @@ function map(parser, fn) {
 }
 
 var tagname = regex(/[^\s\[\{]+/);//regex(/[a-zA-Z][a-zA-Z0-9]*/);
-var attitude = regex(/[^\]]*/);
-var textNode = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
+var attitude = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
   function(result){
-    result = result
+    return result
       .split("\\[").join("[")
       .split("\\]").join("]")
       .split("\\{").join("{")
       .split("\\}").join("}")
       .split("\\\\").join("\\");
-    return {raw:result, parsed:result};
+  });
+var textNode = map(regex(/([^\[\]\{\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/),
+  function(result){
+    return result
+      .split("\\[").join("[")
+      .split("\\]").join("]")
+      .split("\\{").join("{")
+      .split("\\}").join("}")
+      .split("\\\\").join("\\");
   });
 var myNode = map(seq(
   token("\\"), tagname,
   option(seq(regex(/\s*\[/), attitude, regex(/\]/))),
   option(seq(regex(/\s*\{/), lazy(()=>content), regex(/\}/)))),
   function (result) {
-    var raw = result[0] + result[1] +
-      (result[2] ? result[2].join("") : "") +
-      (result[3] ? result[3][1] + result[3][2].raw + result[3][3] : "");
-
     var parsed = "<" + result[1] + (result[2] ? " " + result[2][1] : "") + ">";
-    if($('XMLmode').checked) {
-      parsed += (result[3] ? result[3][1].parsed : "") + "</" + result[1] + ">";
-      return {raw, parsed};
-    }
-    switch(result[1]){
-      case 'area':
-      case 'base':
-      case 'br':
-      case 'col':
-      case 'embed':
-      case 'hr':
-      case 'img':
-      case 'input':
-      case 'keygen':
-      case 'link':
-      case 'meta':
-      case 'param':
-      case 'source':
-      case 'track':
-      case 'wbr':
-        return {raw, parsed};
-      case 'style':
-      case 'script':
-        parsed += (result[3] ? result[3][1].raw : "") + "</" + result[1] + ">";
-        return {raw, parsed};
-      default:
-        parsed += (result[3] ? result[3][1].parsed : "") + "</" + result[1] + ">";
-        return {raw, parsed};
-    }
+
+    if(!$('XMLmode').checked)
+      switch(result[1]){
+        case 'area':
+        case 'base':
+        case 'br':
+        case 'col':
+        case 'embed':
+        case 'hr':
+        case 'img':
+        case 'input':
+        case 'keygen':
+        case 'link':
+        case 'meta':
+        case 'param':
+        case 'source':
+        case 'track':
+        case 'wbr':
+          return parsed;
+        }
+
+    parsed += (result[3] ? result[3][1] : "") + "</" + result[1] + ">";
+    return parsed;
   });
 var content = map(many(choice(textNode, myNode)),
   function(result) {
-    return {
-      raw:result.map(x=>x.raw).join(''),
-      parsed:result.map(x=>x.parsed).join('')
-    };
+    return result.join('');
   });
 
 function update() {
   var input = $('input').value;
-  var output = content(input, 0).result.parsed;
+  var output = content(input, 0).result;
   $('htmlOutput').innerText = output;
   $('visualOutput').innerHTML = output;
 }
