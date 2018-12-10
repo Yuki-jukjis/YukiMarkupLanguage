@@ -1,16 +1,17 @@
 ﻿<!DOCTYPE html>
 <html lang="jp" style="height:100%">
 <head>
-  <meta charset="utf-8">
-  <title>Yuki Markup Language</title>
-  <script src="main.js"></script>
+<meta charset="utf-8">
+<title>Yuki Markup Language</title>
+<script src="main.js"></script>
 </head>
 <body style="height:100%; position:relative;">
 <label><input type="radio" name="1" id="HTMLmode" checked>HTML5</label>
 <label><input type="radio" name="1" id="XMLmode">XML</label>
 <label><input type="checkbox" id="htmlEscape" checked>&lt;や&gt;をエスケープ</label>
 <div style="position:absolute; top:2em; bottom:0; width:100%; display:flex;">
-  <textarea id="input" style="flex:0 1 30%">\h1{Yuki Markup Language}
+<textarea id="input" style="flex:0 1 30%">
+\h1{Yuki Markup Language}
 
 \p{TeXを若干意識したHTML/XMLラッパー言語です。}
 
@@ -23,7 +24,7 @@
 \h3{基本}
 
 \div[.code]{\span[.codetag]{入力}
-  \\タグ名 \[属性\] \{子要素\}
+  \\タグ名 [属性] {子要素\}
 }
 \p{と書くと、}
   \div[.code]{\span[.codetag]{出力}
@@ -31,13 +32,22 @@
 }
 \p{に変換されます。入れ子にすることもできます。}
 
-\p{属性を持たない場合は\[\]を、子要素を持たない場合は\{\}を省略することができます。}
+\p{属性を持たない場合は[]を、子要素を持たない場合は{\}を省略することができます。}
 
-\p{\\とタグ名の間に空白や改行を入れることはできません。タグ名と\[、\]と\{間の空白、改行は任意です。}
+\p{\\とタグ名の間に空白や改行を入れることはできません。タグ名と[、]と{間の空白、改行は任意です。}
 
 \h3{エスケープ}
 
-\p{タグ名、属性名、属性の値、テキスト部分に含まれる\[、\]、\{、\}、\\は、それぞれ\\\[、\\\]、\\\{、\\\}、\\\\にエスケープする必要があります。また、タグ名を\\やエスケープした文字から始めることはできません。}
+\p{属性部分に含まれる]や\\、テキスト部分に含まれる\}や\\は、必ずエスケープする必要があります。その他の場合でも、任意で以下の文字をエスケープすることができます。タグ名はこれらの文字から開始することができず、また、[と{を含めることができません。}
+
+\table{
+\tr{\th{エスケープ前}\th{エスケープ後}}
+\tr{\td{ \\ }\td{ \\\\ }}
+\tr{\td{ \[ }\td{ \\\] }}
+\tr{\td{ \] }\td{ \\\[ }}
+\tr{\td{ \{ }\td{ \\\{ }}
+\tr{\td{ \} }\td{ \\\} }}
+}
 
 \h3{属性}
 
@@ -76,7 +86,7 @@
 \p{HTMLモードではbrタグ、imgタグ、hrタグなどの空要素は、閉じタグを生成しません。子要素を指定した場合は無視されます。}
 
 \div[.code]{\span[.codetag]{入力}
-  \\hr \[style="height:3px"\] \{ \\span \{無視されます\} \}
+  \\hr [style="height:3px"\] { \\span {無視されます\} \}
 }
 
 \div[.code]{\span[.codetag]{出力}
@@ -86,13 +96,13 @@
 \p{XMLモードではこの処理は行われず、全てのタグに閉じタグが生成されます。}
 
 \style{
-p, h1, h2, h3, a \{
+p, h1, h2, h3, a {
  color: #2b2b2b;
 \}
-h1 \{
+h1 {
   text-align:center;
 \}
-.code \{
+.code {
   position: relative;
   color: #E0E0E0;
   background-color: #2b2b2b;
@@ -100,7 +110,7 @@ h1 \{
   padding: 2.5em 30px 1em;
   font-size: .9em;
 \}
-.codetag \{
+.codetag {
   display: block;
   position: absolute;
   top: 0;
@@ -111,9 +121,10 @@ h1 \{
   width: 60px;
   text-align: center;
 \}
-}</textarea>
-  <div id="visualOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
-  <div id="htmlOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
+}
+</textarea>
+<div id="visualOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
+<div id="htmlOutput" style="flex:0 1 35%; overflow-y:scroll"></div>
 </div>
 </body>
 </html>
