@@ -131,7 +131,7 @@ function addQuote(input) {
   return quote+input+quote;
 }
 
-var tagname = map(regex(/[^\s\[\]\{\}\\]([^\s\[\{\\]|\\\[|\\\{|\\\\)*/), decodeEscape);
+var tagName = map(regex(/[^\s\[\]\{\}\\]([^\s\[\{\\]|\\\[|\\\{|\\\\)*/), decodeEscape);
 var attitudeName = map(regex(/([^\s=\\\]]|\\\]|\\\\)+/), decodeEscape);
 var attitudeValue0 = map(regex(/([^\s\\\]]|\\\]|\\\\)+/), decodeEscape);
 var attitudeValue1 = map(regex(/([^'\\\]]|\\\]|\\\\)*/), decodeEscape);
@@ -146,7 +146,7 @@ var attitude = map(many(seq(regex(/\s*/), choice(
 ))), result=>result.map(x=>x[1]).join(" "));
 var textNode = map(regex(/([^\}\\]|\\\[|\\\]|\\\{|\\\}|\\\\)+/), decodeEscape);
 var myNode = map(seq(
-  token("\\"), tagname,
+  token("\\"), tagName,
   option(seq(regex(/\s*\[/), attitude, regex(/\s*\]/))),
   option(seq(regex(/\s*\{/), lazy(()=>content), regex(/\}/)))),
   function (result) {
