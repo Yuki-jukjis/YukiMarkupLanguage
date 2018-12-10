@@ -153,7 +153,7 @@ var myNode = map(seq(
     var parsed = "<" + result[1] + (result[2] ? " " + result[2][1] : "") + ">";
 
     if(!$('XMLmode').checked)
-      switch(result[1]){
+      switch(result[1].toLowerCase()){
         case 'area':
         case 'base':
         case 'br':
